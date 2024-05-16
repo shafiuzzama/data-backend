@@ -26,6 +26,7 @@ app.get('/', async (req, res) => {
 app.post('/create',async(req,res)=>{
     try{
         const {data} = req.body;
+
         const task = await NotesModel.create({note:data});
         res.status(200).send({task});
     }catch(err){
@@ -64,25 +65,20 @@ app.patch('/update/:noteID', async (req, res) => {
 
 
 
-app.delete('/delete/:noteID',async(req,res)=>{
-    try{
-        const {noteID}= req.params;
-        if(noteID){
-            const note = await NotesModel.findOneAndDelete({_id:noteID});
-            if(note){
-                res.send({"msg":"succesfully deleted"})
-            }else{
-            res.send({"msg":"try after some time"});
-            }
-        }else{
-           res.send ({"msg":"enter notes id"});
+app.delete('/deleteAll', async (req, res) => {
+    try {
+        const deleteResult = await NotesModel.deleteMany({});
+        if (deleteResult.deletedCount > 0) {
+            res.send({"msg": "Successfully deleted all items"});
+        } else {
+            res.send({"msg": "No items found to delete"});
         }
-    }catch(err){
+    } catch (err) {
         console.log(err);
         res.status(500).send("Internal Server Error"); // Sending an error response if something goes wrong
-
     }
 })
+
 
 
 app.listen(3000,async(err)=>{

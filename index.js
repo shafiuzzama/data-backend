@@ -11,11 +11,12 @@ app.use(cors());
 
 app.get('/', async (req, res) => {
     try {
-        const notes = await NotesModel.find();
-        res.status(200).send({notes})
+        const tasks = await NotesModel.find();
+        const totalTasks = await NotesModel.countDocuments()
+        res.status(200).send({tasks,totalTasks});
     } catch (err) {
         console.log(err);
-        res.status(500).send("Internal Server Error"); // Sending an error response if something goes wrong
+        res.status(500).send("Internal Server Error"); 
     }
 });
 
@@ -24,20 +25,15 @@ app.get('/', async (req, res) => {
 
 app.post('/create',async(req,res)=>{
     try{
-        const {note} = req.body;
-         const data = {
-            note,
-            count: 1
-        }
+        const {data} = req.body;
         const task = await NotesModel.create(data);
         res.send({task});
     }catch(err){
         console.log(err);
-        res.status(500).send("Internal Server Error"); // Sending an error response if something goes wrong
+        res.status(500).send("Internal Server Error"); 
 
     }
 })
-
 app.patch('/update/:noteID', async (req, res) => {
     try {
         const { noteID } = req.params;
@@ -48,7 +44,7 @@ app.patch('/update/:noteID', async (req, res) => {
             return res.status(404).send({ "msg": "Note not found" });
         }
 
-        payload.count = Number(getNote.count) + 1;
+        payload.updateCount = Number(getNote.updateCount) + 1;
 
         const note = await NotesModel.findOneAndUpdate({ _id: noteID }, payload, { new: true });
         if (note) {

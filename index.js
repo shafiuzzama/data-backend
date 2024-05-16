@@ -26,18 +26,20 @@ app.get('/', async (req, res) => {
 app.post('/create',async(req,res)=>{
     try{
         const {data} = req.body;
-        const task = await NotesModel.create(data);
-        res.send({task});
+        const task = await NotesModel.create({note:data});
+        res.status(200).send({task});
     }catch(err){
         console.log(err);
         res.status(500).send("Internal Server Error"); 
 
     }
 })
+
+
 app.patch('/update/:noteID', async (req, res) => {
     try {
         const { noteID } = req.params;
-        const payload = req.body;
+        const {payload} = req.body;
 
         const getNote = await NotesModel.findOne({ _id: noteID }).lean();
         if (!getNote) {
@@ -46,7 +48,7 @@ app.patch('/update/:noteID', async (req, res) => {
 
         payload.updateCount = Number(getNote.updateCount) + 1;
 
-        const note = await NotesModel.findOneAndUpdate({ _id: noteID }, payload, { new: true });
+        const note = await NotesModel.findOneAndUpdate({ _id: noteID }, {note:payload}, { new: true });
         if (note) {
             res.send({ "msg": "Successfully updated", note: note });
         } else {
@@ -58,6 +60,8 @@ app.patch('/update/:noteID', async (req, res) => {
         res.status(500).send("Internal Server Error"); // Sending an error response if something goes wrong
     }
 });
+
+
 
 
 app.delete('/delete/:noteID',async(req,res)=>{
@@ -84,7 +88,7 @@ app.delete('/delete/:noteID',async(req,res)=>{
 app.listen(3000,async(err)=>{
 try{
 await connection();
-console.log(`server is listining ${3000}`);
+console.log(`server is listining ${3002}`);
 }catch(err){
     console.log("err from connect to db");
     console.log(err);

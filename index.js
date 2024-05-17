@@ -47,9 +47,9 @@ app.patch('/update/:noteID', async (req, res) => {
             return res.status(404).send({ "msg": "Note not found" });
         }
 
-        payload.updateCount = Number(getNote.updateCount) + 1;
+        const updateCount = Number(getNote.updateCount) + 1;
 
-        const note = await NotesModel.findOneAndUpdate({ _id: noteID }, {note:payload}, { new: true });
+        const note = await NotesModel.findOneAndUpdate({ _id: noteID }, {note:payload,updateCount}, { new: true });
         if (note) {
             res.send({ "msg": "Successfully updated", note: note });
         } else {
